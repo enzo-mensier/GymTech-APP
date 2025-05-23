@@ -1,0 +1,39 @@
+name: gymtech
+description: "A project that consist to automate a gym club."
+publish_to: 'none'
+version: 1.0.0+1
+
+environment:
+  sdk: ^3.6.1
+
+dependencies:
+  flutter:
+    sdk: flutter
+  http: ^1.1.2 # ou la dernière version stable
+  shared_preferences: ^2.2.1 # ou la dernière version stable
+  material_symbols_icons: ^4.2805.1 # ou la dernière version stable
+  cupertino_icons: ^1.0.5 # ou la dernière version stable
+  intl: ^0.19.0 # ou la dernière version stable
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^5.0.0 # ou la dernière version stable
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/images/gymtech_logo.png
+  fonts:
+    - family: Teko
+      fonts:
+        - asset: assets/fonts/Teko-Light.ttf
+          weight: 300
+        - asset: assets/fonts/Teko-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Teko-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Teko-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Teko-Bold.ttf
+          weight: 700
