@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import '../widgets/custom_app_bar.dart';
 import '../utils/colors.dart';
+import '../utils/text_styles.dart';
+import '../services/api_service.dart';
 import 'calendrier_screen.dart';
 import 'casiers_screen.dart';
-import 'login_screen.dart';
 import 'utilisateurs_screen.dart';
 import 'parametres_screen.dart';
+
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -17,17 +20,20 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
   Widget _buildPage(int index) {
+    // Créer une seule instance de ApiService pour toute l'application
+    final apiService = const ApiService();
+    
     switch (index) {
       case 0:
-        return CalendrierScreen();
+        return CalendrierScreen(apiService: apiService);
       case 1:
-        return CasiersScreen();
+        return CasiersScreen(apiService: apiService);
       case 2:
-        return UtilisateursScreen();
+        return const UtilisateursScreen();
       case 3:
-        return ParametresScreen();
+        return const ParametresScreen();
       default:
-        return Container();
+        return const SizedBox.shrink();
     }
   }
 
@@ -40,19 +46,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Align(
-          alignment: Alignment.centerLeft,
-          child: Image.asset(
-            'assets/images/gymtech_logo.png',
-            width: 50,
-            height: 50,
-            fit: BoxFit.contain,
-          ),
-        ),
-        backgroundColor: AppColors.backgroundColor,
-        elevation: 0,
+      appBar: CustomAppBar(
+        title: '',
+        showUserInfo: true,
       ),
       body: _buildPage(_selectedIndex),
       bottomNavigationBar: BottomNavigationBar(

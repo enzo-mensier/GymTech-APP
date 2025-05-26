@@ -1,5 +1,8 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:developer' as developer;
+import 'dart:io';
 
 class AuthService {
   final String baseUrl = 'https://gymtech-api.onrender.com'; // serveur eb ligne
@@ -82,6 +85,50 @@ class AuthService {
       throw Exception('Erreur de format de données reçues du serveur');
     } catch (e) {
       print('❌ Erreur inattendue: $e');
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> getUserProfile() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final token = prefs.getString('auth_token');
+      
+      if (token == null) {
+        throw Exception('Non authentifié');
+      }
+      
+      final url = Uri.parse('$baseUrl/api/auth/me');
+      print('🔵 Récupération du profil utilisateur...');
+      print('🌐 URL: $url');
+      
+      final response = await http.get(
+        url,
+        headers: {
+          'Authorization': 'Bearer $token',
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+      );
+      
+      print('📊 Statut HTTP: ${response.statusCode}');
+      print('📦 Réponse: ${response.body}');
+      
+      if (response.statusCode == 200) {
+        final responseData = jsonDecode(response.body);
+        print('✅ Profil utilisateur récupéré avec succès');
+        return responseData as Map<String, dynamic>;
+      } else {
+        final error = jsonDecode(response.body);
+        final errorMsg = error['message'] ?? 'Erreur inconnue';
+        print('❌ Erreur lors de la récupération du profil: $errorMsg');
+        throw Exception(errorMsg);
+      }
+    } on FormatException catch (e) {
+      print('❌ Erreur de format de réponse: $e');
+      throw Exception('Format de réponse invalide du serveur');
+    } catch (e) {
+      print('❌ Erreur lors de la récupération du profil: $e');
       rethrow;
     }
   }

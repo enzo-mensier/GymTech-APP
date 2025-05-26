@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
-import '../screens/home_screen.dart';
-import '../screens/register_screen.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'home_screen.dart';
+import 'register_screen.dart';
 import '../utils/colors.dart';
 import '../utils/text_styles.dart';
 import '../services/auth_service.dart';
@@ -25,14 +26,36 @@ class _LoginScreenState extends State<LoginScreen> {
           _passwordController.text,
         );
 
-        // Stocker le token JWT
-        final String token = response['token'];
-        // TODO: Stocker le token de manière sécurisée (SharedPreferences)
+        // Stocker le token d'authentification
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('auth_token', response['token']);
+        
+        try {
+          // Récupérer les informations complètes de l'utilisateur
+          final userData = await authService.getUserProfile();
+          print('Données utilisateur reçues: $userData');
+          
+          // Sauvegarder les informations utilisateur
+          await prefs.setString('email', _identifiantController.text);
+          await prefs.setString('prenom', userData['prenom']?.toString() ?? '');
+          await prefs.setString('nom', userData['nom']?.toString() ?? '');
+          await prefs.setString('genre', userData['genre']?.toString() ?? '');
+          await prefs.setString('dateNaissance', userData['date_naissance']?.toString() ?? '');
+          await prefs.setString('dateInscription', userData['date_inscription']?.toString() ?? '');
+          
+          print('Informations utilisateur sauvegardées avec succès');
+        } catch (e) {
+          print('Erreur lors de la récupération du profil utilisateur: $e');
+          // Sauvegarder au moins l'email en cas d'erreur
+          await prefs.setString('email', _identifiantController.text);
+        }
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => HomeScreen()),
-        );
+        if (mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => HomeScreen()),
+          );
+        }
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -50,34 +73,44 @@ class _LoginScreenState extends State<LoginScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.backgroundColor,
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: Form( // Entourer avec un Form
+        child: SingleChildScrollView(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
+          child: Form(
             key: _formKey,
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Logo
-                Align(
-                  alignment: Alignment.center,
+                const SizedBox(height: 40.0),
+                // Logo au milieu de la page
+                Center(
                   child: Image.asset(
                     'assets/images/gymtech_logo.png',
-                    width: 120,
-                    height: 120,
+                    height: 150,
                     fit: BoxFit.contain,
                   ),
                 ),
-                SizedBox(height: 48),
+                const SizedBox(height: 24.0),
+                // Titre de la page
+                Text(
+                  'Connexion',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    color: AppColors.primaryColor,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 32.0),
 
                 // Champ Identifiant
                 TextFormField(
                   controller: _identifiantController,
+                  style: TextStyle(color: AppColors.textColor), // Texte en noir
                   decoration: InputDecoration(
-                    labelText: 'Identifiant',
-                    labelStyle: AppTextStyles.regular.copyWith(color: AppColors.contrastColor),
-                    prefixIcon: Icon(Icons.person, color: AppColors.contrastColor),
+                    labelText: 'Email',
+                    labelStyle: AppTextStyles.regular.copyWith(color: AppColors.textColor),
+                    prefixIcon: Icon(Icons.email, color: AppColors.contrastColor),
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(color: AppColors.contrastColor),
@@ -87,6 +120,9 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderSide: BorderSide(color: AppColors.contrastColor),
                     ),
                     floatingLabelStyle: AppTextStyles.regular.copyWith(color: AppColors.contrastColor),
+                    hintStyle: TextStyle(color: AppColors.textColor),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -102,9 +138,10 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextFormField(
                   controller: _passwordController,
                   obscureText: !_isPasswordVisible,
+                  style: TextStyle(color: AppColors.textColor), // Texte en noir
                   decoration: InputDecoration(
                     labelText: 'Mot de passe',
-                    labelStyle: AppTextStyles.regular.copyWith(color: AppColors.contrastColor),
+                    labelStyle: AppTextStyles.regular.copyWith(color: AppColors.textColor),
                     prefixIcon: Icon(Icons.lock, color: AppColors.contrastColor),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -128,6 +165,8 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderSide: BorderSide(color: AppColors.contrastColor),
                     ),
                     floatingLabelStyle: AppTextStyles.regular.copyWith(color: AppColors.contrastColor),
+                    filled: true,
+                    fillColor: Colors.white,
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -165,7 +204,7 @@ class _LoginScreenState extends State<LoginScreen> {
                   children: [
                     Text(
                       'Pas encore de compte ? ',
-                      style: AppTextStyles.regular,
+                      style: AppTextStyles.regular.copyWith(color: AppColors.textColor),
                     ),
                     TextButton(
                       onPressed: () {
@@ -174,41 +213,21 @@ class _LoginScreenState extends State<LoginScreen> {
                           MaterialPageRoute(builder: (context) => RegisterScreen()),
                         );
                       },
+                      style: TextButton.styleFrom(
+                        foregroundColor: AppColors.primaryColor,
+                        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
+                      ),
                       child: Text(
                         'S\'inscrire',
-                        style: AppTextStyles.bold.copyWith(
+                        style: TextStyle(
                           color: AppColors.primaryColor,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                     ),
                   ],
                 ),
-                SizedBox(height: 20),
-
-                // Lien vers la page d'inscription
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Pas encore de compte ? ',
-                      style: AppTextStyles.regular,
-                    ),
-                    TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(builder: (context) => RegisterScreen()),
-                        );
-                      },
-                      child: Text(
-                        'S\'inscrire',
-                        style: AppTextStyles.bold.copyWith(
-                          color: AppColors.primaryColor,
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                const SizedBox(height: 10),
               ],
             ),
           ),

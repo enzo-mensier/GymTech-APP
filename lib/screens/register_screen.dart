@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../utils/colors.dart';
 import '../utils/text_styles.dart';
 import '../services/auth_service.dart';
@@ -22,7 +23,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   String _selectedGenre = 'Homme';
-  final List<String> _genres = ['Homme', 'Femme', 'Autre'];
+  final List<String> _genres = ['Homme', 'Femme'];
+
+  final _textStyle = const TextStyle(
+    color: AppColors.textColor,
+    fontFamily: 'Teko',
+    fontWeight: FontWeight.w400,
+    fontSize: 16,
+  );
+
+  final _errorStyle = const TextStyle(
+    color: AppColors.negativeColor,
+    fontFamily: 'Teko',
+    fontWeight: FontWeight.w400,
+    fontSize: 14,
+  );
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -52,6 +67,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
+  Future<void> _saveUserData() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('prenom', _prenomController.text.trim());
+    await prefs.setString('nom', _nomController.text.trim());
+    await prefs.setString('email', _emailController.text.trim());
+    await prefs.setString('genre', _selectedGenre);
+    await prefs.setString('dateNaissance', _dateNaissanceController.text);
+  }
+
   Future<void> _handleRegister() async {
     if (_formKey.currentState!.validate()) {
       if (_passwordController.text != _confirmPasswordController.text) {
@@ -59,7 +83,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
           SnackBar(
             content: Text(
               'Les mots de passe ne correspondent pas',
-              style: AppTextStyles.regular.copyWith(color: Colors.white),
+              style: _textStyle.copyWith(color: Colors.white),
             ),
             backgroundColor: AppColors.negativeColor,
           ),
@@ -82,20 +106,29 @@ class _RegisterScreenState extends State<RegisterScreen> {
           dateNaissance: _dateNaissanceController.text,
         );
 
+        // Sauvegarder les données utilisateur localement
+        await _saveUserData();
+
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Inscription réussie ! Vous pouvez maintenant vous connecter.'),
+              content: Text(
+                'Inscription réussie ! Vous pouvez maintenant vous connecter.',
+                style: _textStyle,
+              ),
               backgroundColor: Colors.green,
             ),
           );
-          Navigator.pop(context); // Retour à l'écran de connexion
+          Navigator.pop(context);
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text(e.toString().replaceAll('Exception: ', '')),
+              content: Text(
+                e.toString().replaceAll('Exception: ', ''),
+                style: _textStyle,
+              ),
               backgroundColor: Colors.red,
             ),
           );
@@ -116,34 +149,39 @@ class _RegisterScreenState extends State<RegisterScreen> {
       backgroundColor: AppColors.backgroundColor,
       body: SafeArea(
         child: SingleChildScrollView(
-          padding: const EdgeInsets.all(24.0),
+          padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 16.0),
           child: Form(
             key: _formKey,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Logo
+                // Bouton de retour
                 Align(
-                  alignment: Alignment.center,
+                  alignment: Alignment.centerLeft,
+                  child: IconButton(
+                    icon: const Icon(Icons.arrow_back, color: AppColors.contrastColor),
+                    onPressed: () => Navigator.pop(context),
+                  ),
+                ),
+                // Logo au milieu de la page
+                Center(
                   child: Image.asset(
                     'assets/images/gymtech_logo.png',
-                    width: 120,
                     height: 120,
                     fit: BoxFit.contain,
                   ),
                 ),
-                const SizedBox(height: 32),
-
-                // Titre
+                const SizedBox(height: 16.0),
+                // Titre de la page
                 Text(
-                  'Créer un compte',
-                  style: AppTextStyles.bold.copyWith(
-                    color: AppColors.contrastColor,
-                    fontSize: 24,
-                  ),
+                  'Inscription',
                   textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                    color: AppColors.primaryColor,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-                const SizedBox(height: 32),
+                const SizedBox(height: 24.0),
 
                 // Champs du formulaire
                 _buildTextField(
@@ -234,13 +272,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 // Champ Genre
                 DropdownButtonFormField<String>(
                   value: _selectedGenre,
-                  decoration: _inputDecoration('Genre', Icons.person_outline),
-                  style: AppTextStyles.regular.copyWith(color: AppColors.contrastColor),
-                  dropdownColor: AppColors.backgroundColor,
+                  decoration: _inputDecoration('Genre', Icons.transgender),
+                  style: _textStyle,
                   items: _genres.map((String genre) {
                     return DropdownMenuItem<String>(
                       value: genre,
-                      child: Text(genre, style: AppTextStyles.regular),
+                      child: Text(genre, style: _textStyle),
                     );
                   }).toList(),
                   onChanged: (String? newValue) {
@@ -264,6 +301,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   controller: _dateNaissanceController,
                   readOnly: true,
                   onTap: () => _selectDate(context),
+                  style: _textStyle,
                   decoration: _inputDecoration(
                     'Date de naissance',
                     Icons.calendar_today,
@@ -272,7 +310,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
                       onPressed: () => _selectDate(context),
                     ),
                   ),
-                  style: AppTextStyles.regular.copyWith(color: AppColors.contrastColor),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
                       return 'Veuillez sélectionner votre date de naissance';
@@ -317,14 +354,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   children: [
                     Text(
                       'Déjà un compte ? ',
-                      style: AppTextStyles.regular,
+                      style: _textStyle,
                     ),
                     TextButton(
                       onPressed: () => Navigator.pop(context),
                       child: Text(
                         'Se connecter',
-                        style: AppTextStyles.bold.copyWith(
+                        style: TextStyle(
                           color: AppColors.primaryColor,
+                          fontFamily: 'Teko',
+                          fontWeight: FontWeight.w700,
                         ),
                       ),
                     ),
@@ -338,6 +377,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     );
   }
 
+
   Widget _buildTextField({
     required TextEditingController controller,
     required String label,
@@ -348,7 +388,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return TextFormField(
       controller: controller,
       keyboardType: keyboardType,
-      style: AppTextStyles.regular.copyWith(color: AppColors.contrastColor),
+      style: TextStyle(color: AppColors.textColor),
       decoration: _inputDecoration(label, icon),
       validator: validator,
     );
@@ -364,7 +404,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
     return TextFormField(
       controller: controller,
       obscureText: !isVisible,
-      style: AppTextStyles.regular.copyWith(color: AppColors.contrastColor),
+      style: TextStyle(color: AppColors.textColor),
       decoration: _inputDecoration(
         label,
         Icons.lock,
@@ -383,9 +423,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
   InputDecoration _inputDecoration(String label, IconData icon, {Widget? suffixIcon}) {
     return InputDecoration(
       labelText: label,
-      labelStyle: AppTextStyles.regular.copyWith(color: AppColors.contrastColor),
+      labelStyle: AppTextStyles.regular.copyWith(color: AppColors.textColor),
       prefixIcon: Icon(icon, color: AppColors.contrastColor),
       suffixIcon: suffixIcon,
+      filled: true,
+      fillColor: Colors.white,
       border: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
         borderSide: BorderSide(color: AppColors.contrastColor),
@@ -396,7 +438,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
       ),
       focusedBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
-        borderSide: BorderSide(color: AppColors.primaryColor, width: 2),
+        borderSide: BorderSide(color: AppColors.contrastColor),
       ),
       errorBorder: OutlineInputBorder(
         borderRadius: BorderRadius.circular(8),
@@ -410,6 +452,8 @@ class _RegisterScreenState extends State<RegisterScreen> {
         color: AppColors.negativeColor,
         fontSize: 12,
       ),
+      floatingLabelStyle: AppTextStyles.regular.copyWith(color: AppColors.contrastColor),
+      hintStyle: TextStyle(color: AppColors.textColor),
       contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
     );
   }

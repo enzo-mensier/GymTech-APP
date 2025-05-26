@@ -5,8 +5,11 @@ import '../models/casier.dart';
 import '../models/creneau.dart';
 
 class ApiService {
-  final String baseUrl = 'https://gymtech-api.onrender.com'; // serveur eb ligne
-  //final String baseUrl = 'http://192.168.1.11:3002/api'; // Remplacez par votre adresse IP
+  const ApiService();
+  static const String _baseUrl = 'https://gymtech-api.onrender.com'; // serveur en ligne
+  //static const String _baseUrl = 'http://192.168.1.11:3002/api'; // Adresse IP locale
+
+  String get baseUrl => _baseUrl;
 
   // Méthodes pour les utilisateurs
   Future<List<Utilisateur>> getUtilisateurs() async {
