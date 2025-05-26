@@ -68,4 +68,4 @@ api/		                 # Code source du serveur
 
 1. Clonez ce dépôt sur votre machine locale :
    ```bash
-   git clone https://github.com/enzo-mensier/GymTech.git"# GymTech-APP" 
+   git clone https://github.com/enzo-mensier/GymTech-APP.git
