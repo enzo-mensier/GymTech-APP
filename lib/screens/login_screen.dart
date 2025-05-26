@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../screens/home_screen.dart';
+import '../screens/register_screen.dart';
 import '../utils/colors.dart';
 import '../utils/text_styles.dart';
 import '../services/auth_service.dart';
@@ -155,6 +156,58 @@ class _LoginScreenState extends State<LoginScreen> {
                       fontSize: 17,
                     ),
                   ),
+                ),
+                SizedBox(height: 10),
+
+                // Lien vers la page d'inscription
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Pas encore de compte ? ',
+                      style: AppTextStyles.regular,
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => RegisterScreen()),
+                        );
+                      },
+                      child: Text(
+                        'S\'inscrire',
+                        style: AppTextStyles.bold.copyWith(
+                          color: AppColors.primaryColor,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 20),
+
+                // Lien vers la page d'inscription
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      'Pas encore de compte ? ',
+                      style: AppTextStyles.regular,
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => RegisterScreen()),
+                        );
+                      },
+                      child: Text(
+                        'S\'inscrire',
+                        style: AppTextStyles.bold.copyWith(
+                          color: AppColors.primaryColor,
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
