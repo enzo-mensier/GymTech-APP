@@ -159,7 +159,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 Align(
                   alignment: Alignment.centerLeft,
                   child: IconButton(
-                    icon: const Icon(Icons.arrow_back, color: AppColors.contrastColor),
+                    icon: const Icon(Icons.arrow_back, color: AppColors.textColor),
                     onPressed: () => Navigator.pop(context),
                   ),
                 ),

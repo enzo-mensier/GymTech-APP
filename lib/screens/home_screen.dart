@@ -57,7 +57,7 @@ class _HomeScreenState extends State<HomeScreen> {
         selectedItemColor: AppColors.primaryColor,
         unselectedItemColor: AppColors.navColor,
         showSelectedLabels: true,
-        showUnselectedLabels: false,
+        showUnselectedLabels: true,
         elevation: 10,
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.calendar_today), label: 'Réservation'),

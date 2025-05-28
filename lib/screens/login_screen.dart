@@ -106,12 +106,18 @@ class _LoginScreenState extends State<LoginScreen> {
                 // Champ Identifiant
                 TextFormField(
                   controller: _identifiantController,
-                  style: TextStyle(color: AppColors.textColor), // Texte en noir
+                  style: TextStyle(color: AppColors.textColor),
                   decoration: InputDecoration(
                     labelText: 'Email',
                     labelStyle: AppTextStyles.regular.copyWith(color: AppColors.textColor),
                     prefixIcon: Icon(Icons.email, color: AppColors.contrastColor),
+                    filled: true,
+                    fillColor: Colors.white,
                     border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: AppColors.contrastColor),
+                    ),
+                    enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(color: AppColors.contrastColor),
                     ),
@@ -119,10 +125,21 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(color: AppColors.contrastColor),
                     ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: AppColors.negativeColor),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: AppColors.negativeColor, width: 2),
+                    ),
+                    errorStyle: AppTextStyles.regular.copyWith(
+                      color: AppColors.negativeColor,
+                      fontSize: 12,
+                    ),
                     floatingLabelStyle: AppTextStyles.regular.copyWith(color: AppColors.contrastColor),
                     hintStyle: TextStyle(color: AppColors.textColor),
-                    filled: true,
-                    fillColor: Colors.white,
+                    contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
@@ -138,16 +155,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 TextFormField(
                   controller: _passwordController,
                   obscureText: !_isPasswordVisible,
-                  style: TextStyle(color: AppColors.textColor), // Texte en noir
+                  style: TextStyle(color: AppColors.textColor),
                   decoration: InputDecoration(
                     labelText: 'Mot de passe',
                     labelStyle: AppTextStyles.regular.copyWith(color: AppColors.textColor),
                     prefixIcon: Icon(Icons.lock, color: AppColors.contrastColor),
                     suffixIcon: IconButton(
                       icon: Icon(
-                        _isPasswordVisible
-                            ? Icons.visibility
-                            : Icons.visibility_off,
+                        _isPasswordVisible ? Icons.visibility : Icons.visibility_off,
                         color: AppColors.contrastColor,
                       ),
                       onPressed: () {
@@ -156,7 +171,13 @@ class _LoginScreenState extends State<LoginScreen> {
                         });
                       },
                     ),
+                    filled: true,
+                    fillColor: Colors.white,
                     border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: AppColors.contrastColor),
+                    ),
+                    enabledBorder: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(color: AppColors.contrastColor),
                     ),
@@ -164,9 +185,21 @@ class _LoginScreenState extends State<LoginScreen> {
                       borderRadius: BorderRadius.circular(8),
                       borderSide: BorderSide(color: AppColors.contrastColor),
                     ),
+                    errorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: AppColors.negativeColor),
+                    ),
+                    focusedErrorBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      borderSide: BorderSide(color: AppColors.negativeColor, width: 2),
+                    ),
+                    errorStyle: AppTextStyles.regular.copyWith(
+                      color: AppColors.negativeColor,
+                      fontSize: 12,
+                    ),
                     floatingLabelStyle: AppTextStyles.regular.copyWith(color: AppColors.contrastColor),
-                    filled: true,
-                    fillColor: Colors.white,
+                    hintStyle: TextStyle(color: AppColors.textColor),
+                    contentPadding: EdgeInsets.symmetric(vertical: 16, horizontal: 16),
                   ),
                   validator: (value) {
                     if (value == null || value.isEmpty) {
