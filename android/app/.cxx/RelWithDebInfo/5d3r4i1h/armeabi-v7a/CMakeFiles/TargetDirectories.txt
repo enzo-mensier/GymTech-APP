@@ -1,2 +1,0 @@
-C:/BTS/PROJET-GYMTECH-B2CIEL/app_following/GymTech-v1.2/android/app/.cxx/RelWithDebInfo/5d3r4i1h/armeabi-v7a/CMakeFiles/edit_cache.dir
-C:/BTS/PROJET-GYMTECH-B2CIEL/app_following/GymTech-v1.2/android/app/.cxx/RelWithDebInfo/5d3r4i1h/armeabi-v7a/CMakeFiles/rebuild_cache.dir
