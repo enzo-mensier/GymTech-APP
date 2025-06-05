@@ -18,6 +18,7 @@ Les questions abordent des sujets fondamentaux étudié dans cette formation, ce
 ## 🚀 Aperçu de l'application mobile : **GymTech**
 
 Lancement de l'application mobile GymTech : 28/01/2025.
+Finsalisation de l'application mobile GymTech : 05/06/2025.
 
 <div style="text-align: center;">
 <img src="assets/images/preview_app.png" width="90%"/>
